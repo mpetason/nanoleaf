@@ -1,15 +1,45 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
-func GetAllInfo(token string, ip string, port string) {
+type NanoLeaf struct {
+	Name    string  `json:"name"`
+	Effects Effects `json:"effects"`
+}
+
+type Effects struct {
+	EffectsList []string `json:"effectsList"`
+	Select      string   `json:"select"`
+}
+
+func (n NanoLeaf) GetAllInfo(token string, ip string, port string) {
 	endpoint := "/"
-	fmt.Println(apiBuilder(token, ip, port, endpoint))
+	resp, err := http.Get("http://" + ip + ":" + port + "/api/v1/" + token + endpoint)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.Unmarshal(body, &n)
+
+	for _, j := range n.Effects.EffectsList {
+		fmt.Println(j)
+	}
+
+	fmt.Printf("Selected: %v \n", n.Effects.Select)
 }
 
 func GetStatus(token string, ip string, port string) {
@@ -59,12 +89,16 @@ func GetLayout(token string, ip string, port string) {
 
 func apiBuilder(token string, ip string, port string, endpoint string) string {
 	resp, err := http.Get("http://" + ip + ":" + port + "/api/v1/" + token + endpoint)
+
+	if err != nil {
+		fmt.Print(err.Error())
+		os.Exit(1)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer resp.Body.Close()
-
-	body, _ := ioutil.ReadAll(resp.Body)
 	return string(body)
 }

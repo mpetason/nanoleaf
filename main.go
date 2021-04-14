@@ -11,7 +11,6 @@ func main() {
 	ip := os.Getenv("NANOLEAFIP")
 	port := "16021"
 
-	// api.ListEffects(token, ip, port)
-	// api.GetAllInfo(token, ip, port)
-	api.GetLayout(token, ip, port)
+	var n api.NanoLeaf
+	n.GetAllInfo(token, ip, port)
 }
