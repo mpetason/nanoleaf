@@ -7,10 +7,9 @@ import (
 )
 
 func main() {
-	token := os.Getenv("NANOLEAFTOKEN")
-	ip := os.Getenv("NANOLEAFIP")
-	port := "16021"
-
 	var n api.NanoLeaf
-	n.GetAllInfo(token, ip, port)
+	n.Token = os.Getenv("NANOLEAFTOKEN")
+	n.IP = os.Getenv("NANOLEAFIP")
+	n.Port = "16021"
+	n.GetAllInfo()
 }

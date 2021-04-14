@@ -12,6 +12,10 @@ import (
 type NanoLeaf struct {
 	Name    string  `json:"name"`
 	Effects Effects `json:"effects"`
+	State   State   `json:"state"`
+	Token   string
+	IP      string
+	Port    string
 }
 
 type Effects struct {
@@ -19,9 +23,24 @@ type Effects struct {
 	Select      string   `json:"select"`
 }
 
-func (n NanoLeaf) GetAllInfo(token string, ip string, port string) {
+type State struct {
+	Brightness Brightness `json:"brightness"`
+	On         On         `json:"on"`
+}
+
+type Brightness struct {
+	Value int `json:"value"`
+	Max   int `json:"max"`
+	Min   int `json:"min"`
+}
+
+type On struct {
+	Value bool `json:"value"`
+}
+
+func (n NanoLeaf) GetAllInfo() {
 	endpoint := "/"
-	resp, err := http.Get("http://" + ip + ":" + port + "/api/v1/" + token + endpoint)
+	resp, err := http.Get("http://" + n.IP + ":" + n.Port + "/api/v1/" + n.Token + endpoint)
 
 	if err != nil {
 		log.Fatal(err)
@@ -40,6 +59,8 @@ func (n NanoLeaf) GetAllInfo(token string, ip string, port string) {
 	}
 
 	fmt.Printf("Selected: %v \n", n.Effects.Select)
+	fmt.Printf("Brightness: %v \n", n.State.Brightness.Value)
+	fmt.Printf("On: %v \n", n.State.On.Value)
 }
 
 func GetStatus(token string, ip string, port string) {
